@@ -1,5 +1,4 @@
 import quopri
-
 from distance_courses_framework.requests import PostRequests, GetRequests
 
 
