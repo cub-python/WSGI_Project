@@ -20,7 +20,6 @@ class Index:
     def __call__(self, request):
         return '200 OK', render('index.html', objects_list=site.categories)
 
-
 # контроллер "О проекте"
 @AppRoute(routes=routes, url='/about/')
 class About:
