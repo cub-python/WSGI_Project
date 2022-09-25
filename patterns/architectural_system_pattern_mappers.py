@@ -74,7 +74,7 @@ class RecordNotFoundException(Exception):
 """
 connection = sqlite3.connect('patterns.sqlite')
 
-
+"""
 # архитектурный системный паттерн - Data Mapper
 class MapperRegistry:
     mappers = {
@@ -97,4 +97,4 @@ class MapperRegistry:
 
 
 
-"""
+
