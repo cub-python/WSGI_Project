@@ -1,10 +1,6 @@
 import threading
 
-"""
-Unit of Work - это паттерн определяющий логическую транзакцию т. е. атомарную 
-синхронизацию изменений в объектах, 
-помещённых в объект UoW с хранилищем (базой данных).
-"""
+
 # архитектурный системный паттерн - UnitOfWork
 class UnitOfWork:
     """
@@ -79,3 +75,4 @@ class DomainObject:
 
     def mark_removed(self):
         UnitOfWork.get_current().register_removed(self)
+

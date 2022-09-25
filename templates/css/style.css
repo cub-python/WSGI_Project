@@ -31,7 +31,7 @@ body {
 	font-family: Arial, Verdana, sans-serif;
 	font-size: 80%;
 	color: #90b4d;
-	background-color: #f8f8f8;}
+	background-color: #e0e9f0;}
 li {
 	list-style-image: url("images/icon-plus.png");
 	line-height: 1.6em;}
@@ -55,10 +55,10 @@ tr.head th {
 	border-right: 1px solid #749abe;
 	border-top: 1px solid #90b4d6;
 	text-align: center;
-	text-shadow: -1px -1px 1px #666666;
+	text-shadow: -1px -1px 1px #66666;
 	letter-spacing: 0.15em;}
 td {
-	text-shadow: 1px 1px 1px #ffffff;}
+	text-shadow: 1px 1px 1px #d0e2f0;}
 tr.even td, tr.even th {
 	background-color: #e8eff5;}
 tr.head th:first-child {

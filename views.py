@@ -1,10 +1,16 @@
 from datetime import date
 
 from distance_courses_framework.templator import render
-from patterns.сreational_patterns import Engine, Logger
+from patterns.сreational_patterns import Engine, Logger, MapperRegistry
 from patterns.structural_patterns import AppRoute, Debug
 from patterns.behavioral_patterns import EmailNotifier, SmsNotifier, \
     TemplateView, ListView, CreateView, BaseSerializer
+from patterns.architectural_system_pattern_unit_of_work import UnitOfWork
+
+
+#from architectural_system_pattern_unit_of_work import UnitOfWork
+
+
 
 site = Engine()
 logger = Logger('main')
@@ -27,7 +33,6 @@ class About:
     def __call__(self, request):
         return '200 OK', render('about.html')
 
-
 # контроллер - Расписания
 @AppRoute(routes=routes, url='/study_programs/')
 class StudyPrograms:
@@ -41,7 +46,6 @@ class NotFound404:
     @Debug(name='NotFound404')
     def __call__(self, request):
         return '404 WHAT', '404 PAGE Not Found'
-
 
 # контроллер - список курсов
 @AppRoute(routes=routes, url='/courses-list/')
@@ -128,7 +132,6 @@ class CategoryList:
         logger.log('Список категорий')
         return '200 OK', render('category_list.html', objects_list=site.categories)
 
-
 # контроллер - копировать курс
 @AppRoute(routes=routes, url='/copy-course/')
 class CopyCourse:
@@ -154,7 +157,6 @@ class CopyCourse:
 class StudentListView(ListView):
     queryset = site.students
     template_name = 'student_list.html'
-
 
 @AppRoute(routes=routes, url='/create-student/')
 class StudentCreateView(CreateView):
