@@ -2,7 +2,7 @@ import copy
 import quopri
 import sqlite3
 
-#from patterns.architectural_system_pattern_mappers import StudentMapper
+
 from patterns.behavioral_patterns import Subject, ConsoleWriter
 from patterns.architectural_system_pattern_unit_of_work import DomainObject
 import threading
