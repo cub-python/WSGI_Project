@@ -1,11 +1,15 @@
 import copy
 import quopri
-# from behavioral_patterns import ConsoleWriter, Subject
+import sqlite3
+
+#from patterns.architectural_system_pattern_mappers import StudentMapper
+from patterns.behavioral_patterns import Subject, ConsoleWriter
+from patterns.architectural_system_pattern_unit_of_work import DomainObject
+import threading
+
 
 
 # абстрактный пользователь
-from patterns.behavioral_patterns import Subject, ConsoleWriter
-
 
 class User:
     def __init__(self, name):
@@ -22,8 +26,6 @@ class Student(User):
         self.courses = []
         super().__init__(name)
 
-
-
 # порождающий паттерн Абстрактная фабрика - фабрика пользователей
 class UserFactory:
     types = {
@@ -35,7 +37,6 @@ class UserFactory:
     @classmethod
     def create(cls, type_, name):
         return cls.types[type_](name)
-
 
 # порождающий паттерн Прототип - Курс
 class CoursePrototype:
@@ -71,7 +72,6 @@ class InteractiveCourse(Course):
 # Курс в записи
 class RecordCourse(Course):
     pass
-
 
 # Категория
 class Category:
@@ -168,7 +168,6 @@ class SingletonByName(type):
             cls.__instance[name] = super().__call__(*args, **kwargs)
             return cls.__instance[name]
 
-
 # Заметка, можно применить стратегию если добавить стратегию логирования
 class Logger(metaclass=SingletonByName):
 
@@ -180,3 +179,98 @@ class Logger(metaclass=SingletonByName):
         text = f'log---> {text}'
         self.writer.write(text)
 
+
+class StudentMapper:
+
+    def __init__(self, connection):
+        self.connection = connection
+        self.cursor = connection.cursor()
+        self.tablename = 'student'
+
+    def all(self):
+        statement = f'SELECT * from {self.tablename}'
+        self.cursor.execute(statement)
+        result = []
+        for item in self.cursor.fetchall():
+            id, name = item
+            student = Student(name)
+            student.id = id
+            result.append(student)
+        return result
+
+    def find_by_id(self, id):
+        statement = f"SELECT id, name FROM {self.tablename} WHERE id=?"
+        self.cursor.execute(statement, (id,))
+        result = self.cursor.fetchone()
+        if result:
+            return Student(*result)
+        else:
+            raise RecordNotFoundException(f'record with id={id} not found')
+
+    def insert(self, obj):
+        statement = f"INSERT INTO {self.tablename} (name) VALUES (?)"
+        self.cursor.execute(statement, (obj.name,))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbCommitException(e.args)
+
+    def update(self, obj):
+        statement = f"UPDATE {self.tablename} SET name=? WHERE id=?"
+        # Где взять obj.id? Добавить в DomainModel? Или добавить когда берем объект из базы
+        self.cursor.execute(statement, (obj.name, obj.id))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbUpdateException(e.args)
+
+    def delete(self, obj):
+        statement = f"DELETE FROM {self.tablename} WHERE id=?"
+        self.cursor.execute(statement, (obj.id,))
+        try:
+            self.connection.commit()
+        except Exception as e:
+            raise DbDeleteException(e.args)
+
+
+connection = sqlite3.connect('patterns.sqlite')
+
+
+# архитектурный системный паттерн - Data Mapper
+class MapperRegistry:
+    mappers = {
+        'student': StudentMapper,
+        #'category': CategoryMapper
+    }
+
+    @staticmethod
+    def get_mapper(obj):
+
+        if isinstance(obj, Student):
+
+            return StudentMapper(connection)
+        #if isinstance(obj, Category):
+            #return CategoryMapper(connection)
+
+    @staticmethod
+    def get_current_mapper(name):
+        return MapperRegistry.mappers[name](connection)
+
+
+class DbCommitException(Exception):
+    def __init__(self, message):
+        super().__init__(f'Db commit error: {message}')
+
+
+class DbUpdateException(Exception):
+    def __init__(self, message):
+        super().__init__(f'Db update error: {message}')
+
+
+class DbDeleteException(Exception):
+    def __init__(self, message):
+        super().__init__(f'Db delete error: {message}')
+
+class RecordNotFoundException(Exception):
+    def __init__(self, message):
+        super().__init__(f'Record not found: {message}')
