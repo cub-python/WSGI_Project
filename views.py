@@ -194,3 +194,12 @@ class CourseApi:
     @Debug(name='CourseApi')
     def __call__(self, request):
         return '200 OK', BaseSerializer(site.courses).save()
+
+# # контроллер обратная связь
+# @AppRoute(routes=routes, url='/contact')
+# class Contact:
+#     @Debug(name='Contact')
+#     def __call__(self, request):
+#         eturn
+#         '200 OK', render('contact.html')
+#
